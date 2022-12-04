@@ -1,16 +1,17 @@
 #include"net.h"
-double atan1(double x,Matrix *M)
+float atan1(float x,Matrix *M)
 {
 	return 2/3.1415926/(1+x*x);
 }
-double atanm(double x,Matrix *M)
+float atanm(float x,Matrix *M)
 {
-	return atan(x)*2/3.1415926;
+	
+	return atan((double)x)*2/3.1415926;
 }
-double quantify(double da,Matrix *M)
+float quantify(float da,Matrix *M)
 {
 	int level=15;
-	double kedu=0.2;
+	float kedu=0.2;
 	if(da<0)
 	da=da-0.000001;
 	else
@@ -21,10 +22,10 @@ double quantify(double da,Matrix *M)
 		default:if(da<0) return kedu*(1-level)/2; else return kedu*(level-1)/2;break;
 	}
 }
-double softmax(double z,Matrix *M)
+float softmax(float z,Matrix *M)
 {
 	int i=0;
-	double sum=0;
+	float sum=0;
 	for(i=0;i<(M->line)*(M->row);i++)
 		sum+=exp(M->data[i]);
 	return exp(z)/sum;
@@ -167,7 +168,7 @@ void getgrad(struct layer *flayer,Matrix *y0,Matrix *yloss,Matrix **theta,Matrix
 			M=NULL;		
 	}
 }
-void upweightnet(struct layer *flayer,Matrix **dweight,double step)//更新权重网络
+void upweightnet(struct layer *flayer,Matrix **dweight,float step)//更新权重网络
 {
 	Matrix *M,*M1;
 	int i=0;
@@ -189,7 +190,7 @@ void upweightnet(struct layer *flayer,Matrix **dweight,double step)//更新权�
 	}
 		qweightnet(flayer);//更新量化权重网络
 }
-void addweight(struct layer *flayer,Matrix **dweight,Matrix **dweight1,double step)//更新权重网络
+void addweight(struct layer *flayer,Matrix **dweight,Matrix **dweight1,float step)//更新权重网络
 {
 	Matrix *M,*M1;
 	int i=0;
@@ -214,7 +215,7 @@ void Inputdata_net(struct layer *Flay,FILE *data,FILE *lab,Matrix *Out)//导入�
 	for(int i=0;i<size_data;i++)
    {
 		fscanf(data,"%d",&temp);
-		Flay[0].nerusA->data[i]=0.001*(double)temp;
+		Flay[0].nerusA->data[i]=0.001*(float)temp;
    }
    	fscanf(lab,"%d",&temp);
    	for(int i=0;i<size_lab;i++)
@@ -223,7 +224,7 @@ void Inputdata_net(struct layer *Flay,FILE *data,FILE *lab,Matrix *Out)//导入�
    }
    Out->data[temp]=1;
 }
-void trainnet(struct layer *flayer,Matrix *y0,double step,int datasize,int ecoh,FILE *ftdp,FILE *ftlp)//训练网络--step步长，ecoh训练总轮数，y0正确输出
+void trainnet(struct layer *flayer,Matrix *y0,float step,int datasize,int ecoh,FILE *ftdp,FILE *ftlp)//训练网络--step步长，ecoh训练总轮数，y0正确输出
 {
 	Matrix *yloss,**theta,**dweight1,**dweight,*M;//损失函数，theta，权重梯度，临时矩阵
 	int i=0,j=0,k=0;
@@ -263,7 +264,7 @@ void trainnet(struct layer *flayer,Matrix *y0,double step,int datasize,int ecoh,
 	}	
 	}
 }
-int Fmax(double *data,int num)//找最大值
+int Fmax(float *data,int num)//找最大值
 {
 	int i,temp=0;
 	for(i=0;i<num;i++)
@@ -273,10 +274,10 @@ int Fmax(double *data,int num)//找最大值
 	}
 	return temp;
 }
-double predict(struct layer *Flay,FILE *ftestdp,FILE *ftestlp,Matrix *y0,int num)//预测函数
+float predict(struct layer *Flay,FILE *ftestdp,FILE *ftestlp,Matrix *y0,int num)//预测函数
 {
 	int count=0,tem=0,tem2=0;
-	double cr;
+	float cr;
 	for(int i=0;i<num;i++)
 	{
 		Inputdata_net(Flay,ftestdp,ftestlp,y0);
@@ -295,11 +296,9 @@ double predict(struct layer *Flay,FILE *ftestdp,FILE *ftestlp,Matrix *y0,int num
 	}
 	cr=count;
     cr=cr/num;
-	//printf("correct rate: %lf %c\n",100*cr,'%');
+	//printf("correct rate: %f %c\n",100*cr,'%');
     return cr;
-
 }
-
 void Train_Pre_net(struct net *net)
 {
     Matrix *Outmat;//输出矩阵
@@ -307,5 +306,5 @@ void Train_Pre_net(struct net *net)
    	Outmat=InitMatrix(1,net->Flay[net->Flay->lnum-1].num);//生成标签矩阵
    	trainnet(net->Flay,Outmat,net->studya,net->trainnum,net->epochs,net->ftdp,net->ftlp);//训练网络15-95.72,20-95.91,22-95.94,25-96.02
 	net->cr=predict(net->Flay,net->ftestdp,net->ftestlp,Outmat,net->testnum);//预测
-    //printnet(net->Flay);//打印网络
+   // printnet(net->Flay);//打印网络
 }     

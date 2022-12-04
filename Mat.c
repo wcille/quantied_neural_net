@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "Mat.h"
-#include<time.h>
+#include <time.h>
 Matrix* InitMatrix(int row,int line)				//初始化一个矩阵
 {
 	if (row>0 && line>0)
@@ -11,19 +11,19 @@ Matrix* InitMatrix(int row,int line)				//初始化一个矩阵
 		matrix = (Matrix*)malloc(sizeof(Matrix));
 		matrix->row = row;
 		matrix->line = line;
-		matrix->data = (double*)malloc(sizeof(double)*row*line);
-		memset(matrix->data,0,sizeof(double)*row*line);
+		matrix->data = (float*)malloc(sizeof(float)*row*line);
+		memset(matrix->data,0,sizeof(float)*row*line);
 		return matrix;
 	}
 	else 
 		return NULL;
 } 
 
-void ValueMatrix(Matrix *matrix,double *array) 	
+void ValueMatrix(Matrix *matrix,float *array) 	
 {
 	if (matrix->data != NULL)
 	{
-		memcpy(matrix->data, array, matrix->row*matrix->line*sizeof(double));
+		memcpy(matrix->data, array, matrix->row*matrix->line*sizeof(float));
 	}
 }
 
@@ -36,6 +36,7 @@ void FreeMatrix(Matrix *matrix)
 {
 	free(matrix->data);		
 	matrix->data = NULL;
+	free(matrix);
 	//printf("free\n");
 }
 
@@ -43,14 +44,14 @@ void CopyMatrix(Matrix *matrix_A, Matrix *matrix_B)
 {
 	matrix_B->row = matrix_A->row;
 	matrix_B->line = matrix_A->line;
-	memcpy(matrix_B->data, matrix_A->data, SizeMatrix(matrix_A)*sizeof(double));
+	memcpy(matrix_B->data, matrix_A->data, SizeMatrix(matrix_A)*sizeof(float));
 }
 
 void PrintMatrix(Matrix *matrix)
 {
 	for (int i=0;i<SizeMatrix(matrix);i++)
 	{
-		printf("%lf\t", matrix->data[i]);
+		printf("%f\t", matrix->data[i]);
 		if ((i+1)%matrix->line == 0)
 			printf("\n");
 	}
@@ -122,7 +123,7 @@ Matrix* HadamaMatrix(Matrix *matrix_A,Matrix *matrix_B)
 	}
 }
 
-Matrix* DotmultMatrix(Matrix *matrix_A,double step)
+Matrix* DotmultMatrix(Matrix *matrix_A,float step)
 {
 
 		Matrix *matrix_C = InitMatrix(matrix_A->row,matrix_A->line);
@@ -135,7 +136,7 @@ Matrix* DotmultMatrix(Matrix *matrix_A,double step)
 		}
 		return matrix_C;
 }
-Matrix* FXMatrix(Matrix *matrix_A,double (*p)(double,Matrix*))
+Matrix* FXMatrix(Matrix *matrix_A,float (*p)(float,Matrix*))
 {
 
 		Matrix *matrix_C = InitMatrix(matrix_A->row,matrix_A->line);
@@ -148,7 +149,7 @@ Matrix* FXMatrix(Matrix *matrix_A,double (*p)(double,Matrix*))
 		}
 		return matrix_C;
 }
-void RandomMatrix(Matrix *matrix_A,double upnum)
+void RandomMatrix(Matrix *matrix_A,float upnum)
 {
 
 		for (int i=0;i<matrix_A->line;i++)
@@ -176,7 +177,7 @@ Matrix* MulMatrix(Matrix *matrix_A,Matrix *matrix_B)
 				{
 					matrix_C->data[i*matrix_C->line + j] += \
 					matrix_A->data[i*matrix_A->line + k] * matrix_B->data[k*matrix_B->line + j];
-				//printf("%lf*%lf\n",matrix_A->data[i*matrix_A->line + k],matrix_B->data[k*matrix_B->row + j]);
+				//printf("%f*%f\n",matrix_A->data[i*matrix_A->line + k],matrix_B->data[k*matrix_B->row + j]);
 				}
 				
 			}
